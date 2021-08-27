@@ -8,9 +8,11 @@
 #include "ORBSlamPython.h"
 
 #if (PY_VERSION_HEX >= 0x03000000)
-static void* init_ar() {
+static void *init_ar()
+{
 #else
-static void init_ar() {
+static void init_ar()
+{
 #endif
     Py_Initialize();
 
@@ -31,14 +33,14 @@ BOOST_PYTHON_MODULE(orbslam2)
         .value("NOT_INITIALIZED", ORB_SLAM2::Tracking::eTrackingState::NOT_INITIALIZED)
         .value("OK", ORB_SLAM2::Tracking::eTrackingState::OK)
         .value("LOST", ORB_SLAM2::Tracking::eTrackingState::LOST);
-    
+
     boost::python::enum_<ORB_SLAM2::System::eSensor>("Sensor")
         .value("MONOCULAR", ORB_SLAM2::System::eSensor::MONOCULAR)
         .value("STEREO", ORB_SLAM2::System::eSensor::STEREO)
         .value("RGBD", ORB_SLAM2::System::eSensor::RGBD);
 
-    boost::python::class_<ORBSlamPython, boost::noncopyable>("System", boost::python::init<const char*, const char*, boost::python::optional<ORB_SLAM2::System::eSensor>>())
-        .def(boost::python::init<std::string, std::string, boost::python::optional<ORB_SLAM2::System::eSensor>>())
+    boost::python::class_<ORBSlamPython, boost::noncopyable>("System", boost::python::init<const char *, const char *, boost::python::optional<ORB_SLAM2::System::eSensor> >())
+        .def(boost::python::init<std::string, std::string, boost::python::optional<ORB_SLAM2::System::eSensor> >())
         .def("initialize", &ORBSlamPython::initialize)
         .def("load_and_process_mono", &ORBSlamPython::loadAndProcessMono)
         .def("process_image_mono", &ORBSlamPython::processMono)
@@ -56,6 +58,7 @@ BOOST_PYTHON_MODULE(orbslam2)
         .def("get_tracked_mappoints", &ORBSlamPython::getTrackedMappoints)
         .def("get_tracking_state", &ORBSlamPython::getTrackingState)
         .def("get_num_features", &ORBSlamPython::getNumFeatures)
+        .def("get_num_keyframes", &ORBSlamPython::getNumKeyframes)
         .def("get_num_matched_features", &ORBSlamPython::getNumMatches)
         .def("save_settings", &ORBSlamPython::saveSettings)
         .def("load_settings", &ORBSlamPython::loadSettings)
@@ -67,24 +70,22 @@ BOOST_PYTHON_MODULE(orbslam2)
 
 ORBSlamPython::ORBSlamPython(std::string vocabFile, std::string settingsFile, ORB_SLAM2::System::eSensor sensorMode)
     : vocabluaryFile(vocabFile),
-    settingsFile(settingsFile),
-    sensorMode(sensorMode),
-    system(nullptr),
-    bUseViewer(false),
-    bUseRGB(true)
+      settingsFile(settingsFile),
+      sensorMode(sensorMode),
+      system(nullptr),
+      bUseViewer(false),
+      bUseRGB(true)
 {
-    
 }
 
-ORBSlamPython::ORBSlamPython(const char* vocabFile, const char* settingsFile, ORB_SLAM2::System::eSensor sensorMode)
+ORBSlamPython::ORBSlamPython(const char *vocabFile, const char *settingsFile, ORB_SLAM2::System::eSensor sensorMode)
     : vocabluaryFile(vocabFile),
-    settingsFile(settingsFile),
-    sensorMode(sensorMode),
-    system(nullptr),
-    bUseViewer(false),
-    bUseRGB(true)
+      settingsFile(settingsFile),
+      sensorMode(sensorMode),
+      system(nullptr),
+      bUseViewer(false),
+      bUseRGB(true)
 {
-
 }
 
 ORBSlamPython::~ORBSlamPython()
@@ -149,7 +150,8 @@ bool ORBSlamPython::loadAndProcessStereo(std::string leftImageFile, std::string 
     }
     cv::Mat leftImage = cv::imread(leftImageFile, cv::IMREAD_COLOR);
     cv::Mat rightImage = cv::imread(rightImageFile, cv::IMREAD_COLOR);
-    if (bUseRGB) {
+    if (bUseRGB)
+    {
         cv::cvtColor(leftImage, leftImage, cv::COLOR_BGR2RGB);
         cv::cvtColor(rightImage, rightImage, cv::COLOR_BGR2RGB);
     }
@@ -162,7 +164,8 @@ bool ORBSlamPython::processStereo(cv::Mat leftImage, cv::Mat rightImage, double 
     {
         return false;
     }
-    if (leftImage.data && rightImage.data) {
+    if (leftImage.data && rightImage.data)
+    {
         cv::Mat pose = system->TrackStereo(leftImage, rightImage, timestamp);
         return !pose.empty();
     }
@@ -231,12 +234,22 @@ unsigned int ORBSlamPython::getNumFeatures() const
     return 0;
 }
 
+unsigned int ORBSlamPython::getNumKeyframes() const
+{
+    if (system)
+    {
+        vector<ORB_SLAM2::KeyFrame *> vpKFs = system->GetKeyFrames();
+        return vpKFs.size();
+    }
+    return 0;
+}
+
 unsigned int ORBSlamPython::getNumMatches() const
 {
     if (system)
     {
         // This code is based on the display code in FrameDrawer.cc, with a little extra safety logic to check the length of the vectors.
-        ORB_SLAM2::Tracking* pTracker = system->GetTracker();
+        ORB_SLAM2::Tracking *pTracker = system->GetTracker();
         unsigned int matches = 0;
         unsigned int num = pTracker->mCurrentFrame.mvKeys.size();
         if (pTracker->mCurrentFrame.mvpMapPoints.size() < num)
@@ -247,10 +260,10 @@ unsigned int ORBSlamPython::getNumMatches() const
         {
             num = pTracker->mCurrentFrame.mvbOutlier.size();
         }
-        for(unsigned int i = 0; i < num; ++i)
+        for (unsigned int i = 0; i < num; ++i)
         {
-            ORB_SLAM2::MapPoint* pMP = pTracker->mCurrentFrame.mvpMapPoints[i];
-            if(pMP && !pTracker->mCurrentFrame.mvbOutlier[i] && pMP->Observations() > 0)
+            ORB_SLAM2::MapPoint *pMP = pTracker->mCurrentFrame.mvpMapPoints[i];
+            if (pMP && !pTracker->mCurrentFrame.mvbOutlier[i] && pMP->Observations() > 0)
             {
                 ++matches;
             }
@@ -268,7 +281,7 @@ boost::python::list ORBSlamPython::getKeyframePoints() const
     }
 
     // This is copied from the ORB_SLAM2 System.SaveKeyFrameTrajectoryTUM function, with some changes to output a python tuple.
-    vector<ORB_SLAM2::KeyFrame*> vpKFs = system->GetKeyFrames();
+    vector<ORB_SLAM2::KeyFrame *> vpKFs = system->GetKeyFrames();
     std::sort(vpKFs.begin(), vpKFs.end(), ORB_SLAM2::KeyFrame::lId);
 
     // Transform all keyframes so that the first keyframe is at the origin.
@@ -277,32 +290,31 @@ boost::python::list ORBSlamPython::getKeyframePoints() const
 
     boost::python::list trajectory;
 
-    for(size_t i=0; i<vpKFs.size(); i++)
+    for (size_t i = 0; i < vpKFs.size(); i++)
     {
-        ORB_SLAM2::KeyFrame* pKF = vpKFs[i];
+        ORB_SLAM2::KeyFrame *pKF = vpKFs[i];
 
         // pKF->SetPose(pKF->GetPose()*Two);
 
-        if(pKF->isBad())
+        if (pKF->isBad())
             continue;
 
         cv::Mat R = pKF->GetRotation().t();
         cv::Mat t = pKF->GetCameraCenter();
         trajectory.append(boost::python::make_tuple(
-                              pKF->mTimeStamp,
-                              R.at<float>(0,0),
-                              R.at<float>(0,1),
-                              R.at<float>(0,2),
-                              t.at<float>(0),
-                              R.at<float>(1,0),
-                              R.at<float>(1,1),
-                              R.at<float>(1,2),
-                              t.at<float>(1),
-                              R.at<float>(2,0),
-                              R.at<float>(2,1),
-                              R.at<float>(2,2),
-                              t.at<float>(2)
-                              ));
+            pKF->mTimeStamp,
+            R.at<float>(0, 0),
+            R.at<float>(0, 1),
+            R.at<float>(0, 2),
+            t.at<float>(0),
+            R.at<float>(1, 0),
+            R.at<float>(1, 1),
+            R.at<float>(1, 2),
+            t.at<float>(1),
+            R.at<float>(2, 0),
+            R.at<float>(2, 1),
+            R.at<float>(2, 2),
+            t.at<float>(2)));
     }
 
     return trajectory;
@@ -314,21 +326,21 @@ boost::python::list ORBSlamPython::getTrackedMappoints() const
     {
         return boost::python::list();
     }
-    
+
     // This is copied from the ORB_SLAM2 System.SaveTrajectoryKITTI function, with some changes to output a python tuple.
-    vector<ORB_SLAM2::MapPoint*> Mps = system->GetTrackedMapPoints();
-    
+    vector<ORB_SLAM2::MapPoint *> Mps = system->GetTrackedMapPoints();
+
     boost::python::list map_points;
-    for(size_t i=0; i<Mps.size(); i++)    {
+    for (size_t i = 0; i < Mps.size(); i++)
+    {
         cv::Mat wp = Mps[i]->GetWorldPos();
         map_points.append(boost::python::make_tuple(
-            wp.at<float>(0,0),
-            wp.at<float>(1,0),
-            wp.at<float>(2,0)                          
-            ));
-        }
+            wp.at<float>(0, 0),
+            wp.at<float>(1, 0),
+            wp.at<float>(2, 0)));
+    }
 
-        return map_points;
+    return map_points;
 }
 
 boost::python::list ORBSlamPython::getTrajectoryPoints() const
@@ -339,14 +351,15 @@ boost::python::list ORBSlamPython::getTrajectoryPoints() const
     }
 
     // This is copied from the ORB_SLAM2 System.SaveTrajectoryKITTI function, with some changes to output a python tuple.
-    vector<ORB_SLAM2::KeyFrame*> vpKFs = system->GetKeyFrames();
+    vector<ORB_SLAM2::KeyFrame *> vpKFs = system->GetKeyFrames();
     std::sort(vpKFs.begin(), vpKFs.end(), ORB_SLAM2::KeyFrame::lId);
 
     // Transform all keyframes so that the first keyframe is at the origin.
     // After a loop closure the first keyframe might not be at the origin.
     // Of course, if we have no keyframes, then just use the identity matrix.
-    cv::Mat Two = cv::Mat::eye(4,4,CV_32F);
-    if (vpKFs.size() > 0) {
+    cv::Mat Two = cv::Mat::eye(4, 4, CV_32F);
+    if (vpKFs.size() > 0)
+    {
         cv::Mat Two = vpKFs[0]->GetPoseInverse();
     }
 
@@ -358,50 +371,53 @@ boost::python::list ORBSlamPython::getTrajectoryPoints() const
 
     // For each frame we have a reference keyframe (lRit), the timestamp (lT) and a flag
     // which is true when tracking failed (lbL).
-    std::list<ORB_SLAM2::KeyFrame*>::iterator lRit = system->GetTracker()->mlpReferences.begin();
+    std::list<ORB_SLAM2::KeyFrame *>::iterator lRit = system->GetTracker()->mlpReferences.begin();
     std::list<double>::iterator lT = system->GetTracker()->mlFrameTimes.begin();
-    for(std::list<cv::Mat>::iterator lit=system->GetTracker()->mlRelativeFramePoses.begin(), lend=system->GetTracker()->mlRelativeFramePoses.end();lit!=lend;lit++, lRit++, lT++)
+    for (std::list<cv::Mat>::iterator lit = system->GetTracker()->mlRelativeFramePoses.begin(), lend = system->GetTracker()->mlRelativeFramePoses.end(); lit != lend; lit++, lRit++, lT++)
     {
-        ORB_SLAM2::KeyFrame* pKF = *lRit;
+        ORB_SLAM2::KeyFrame *pKF = *lRit;
 
-        cv::Mat Trw = cv::Mat::eye(4,4,CV_32F);
+        cv::Mat Trw = cv::Mat::eye(4, 4, CV_32F);
 
-        while(pKF != NULL && pKF->isBad())
+        while (pKF != NULL && pKF->isBad())
         {
-            ORB_SLAM2::KeyFrame* pKFParent;
+            ORB_SLAM2::KeyFrame *pKFParent;
 
             // std::cout << "bad parent" << std::endl;
-            Trw = Trw*pKF->mTcp;
+            Trw = Trw * pKF->mTcp;
             pKFParent = pKF->GetParent();
-            if (pKFParent == pKF) {
+            if (pKFParent == pKF)
+            {
                 // We've found a frame that is it's own parent, presumably a root or something. Break out
                 break;
-            } else {
+            }
+            else
+            {
                 pKF = pKFParent;
             }
         }
-        if (pKF != NULL && !pKF->isBad()) {
-            Trw = Trw*pKF->GetPose()*Two;
+        if (pKF != NULL && !pKF->isBad())
+        {
+            Trw = Trw * pKF->GetPose() * Two;
 
-            cv::Mat Tcw = (*lit)*Trw;
-            cv::Mat Rwc = Tcw.rowRange(0,3).colRange(0,3).t();
-            cv::Mat twc = -Rwc*Tcw.rowRange(0,3).col(3);
+            cv::Mat Tcw = (*lit) * Trw;
+            cv::Mat Rwc = Tcw.rowRange(0, 3).colRange(0, 3).t();
+            cv::Mat twc = -Rwc * Tcw.rowRange(0, 3).col(3);
 
             trajectory.append(boost::python::make_tuple(
-                                *lT,
-                                Rwc.at<float>(0,0),
-                                Rwc.at<float>(0,1),
-                                Rwc.at<float>(0,2),
-                                twc.at<float>(0),
-                                Rwc.at<float>(1,0),
-                                Rwc.at<float>(1,1),
-                                Rwc.at<float>(1,2),
-                                twc.at<float>(1),
-                                Rwc.at<float>(2,0),
-                                Rwc.at<float>(2,1),
-                                Rwc.at<float>(2,2),
-                                twc.at<float>(2)
-                            ));
+                *lT,
+                Rwc.at<float>(0, 0),
+                Rwc.at<float>(0, 1),
+                Rwc.at<float>(0, 2),
+                twc.at<float>(0),
+                Rwc.at<float>(1, 0),
+                Rwc.at<float>(1, 1),
+                Rwc.at<float>(1, 2),
+                twc.at<float>(1),
+                Rwc.at<float>(2, 0),
+                Rwc.at<float>(2, 1),
+                Rwc.at<float>(2, 2),
+                twc.at<float>(2)));
         }
     }
 
@@ -436,7 +452,7 @@ boost::python::dict ORBSlamPython::loadSettings() const
 bool ORBSlamPython::saveSettingsFile(boost::python::dict settings, std::string settingsFilename)
 {
     cv::FileStorage fs(settingsFilename.c_str(), cv::FileStorage::WRITE);
-    
+
     boost::python::list keys = settings.keys();
     for (int index = 0; index < boost::python::len(keys); ++index)
     {
@@ -446,21 +462,21 @@ bool ORBSlamPython::saveSettingsFile(boost::python::dict settings, std::string s
             continue;
         }
         std::string key = extractedKey;
-        
+
         boost::python::extract<int> intValue(settings[key]);
         if (intValue.check())
         {
             fs << key << int(intValue);
             continue;
         }
-        
+
         boost::python::extract<float> floatValue(settings[key]);
         if (floatValue.check())
         {
             fs << key << float(floatValue);
             continue;
         }
-        
+
         boost::python::extract<std::string> stringValue(settings[key]);
         if (stringValue.check())
         {
@@ -468,19 +484,19 @@ bool ORBSlamPython::saveSettingsFile(boost::python::dict settings, std::string s
             continue;
         }
     }
-    
+
     return true;
 }
 
 // Helpers for reading cv::FileNode objects into python objects.
-boost::python::list readSequence(cv::FileNode fn, int depth=10);
-boost::python::dict readMap(cv::FileNode fn, int depth=10);
+boost::python::list readSequence(cv::FileNode fn, int depth = 10);
+boost::python::dict readMap(cv::FileNode fn, int depth = 10);
 
 boost::python::dict ORBSlamPython::loadSettingsFile(std::string settingsFilename)
 {
     cv::FileStorage fs(settingsFilename.c_str(), cv::FileStorage::READ);
     cv::FileNode root = fs.root();
-    if (root.isMap()) 
+    if (root.isMap())
     {
         return readMap(root);
     }
@@ -493,17 +509,18 @@ boost::python::dict ORBSlamPython::loadSettingsFile(std::string settingsFilename
     return boost::python::dict();
 }
 
-
 // ----------- HELPER DEFINITIONS -----------
 boost::python::dict readMap(cv::FileNode fn, int depth)
 {
     boost::python::dict map;
-    if (fn.isMap()) {
+    if (fn.isMap())
+    {
         cv::FileNodeIterator it = fn.begin(), itEnd = fn.end();
-        for (; it != itEnd; ++it) {
+        for (; it != itEnd; ++it)
+        {
             cv::FileNode item = *it;
             std::string key = item.name();
-            
+
             if (item.isNone())
             {
                 map[key] = boost::python::object();
@@ -522,11 +539,11 @@ boost::python::dict readMap(cv::FileNode fn, int depth)
             }
             else if (item.isSeq() && depth > 0)
             {
-                map[key] = readSequence(item, depth-1);
+                map[key] = readSequence(item, depth - 1);
             }
             else if (item.isMap() && depth > 0)
             {
-                map[key] = readMap(item, depth-1);  // Depth-limited recursive call to read inner maps
+                map[key] = readMap(item, depth - 1); // Depth-limited recursive call to read inner maps
             }
         }
     }
@@ -536,11 +553,13 @@ boost::python::dict readMap(cv::FileNode fn, int depth)
 boost::python::list readSequence(cv::FileNode fn, int depth)
 {
     boost::python::list sequence;
-    if (fn.isSeq()) {
+    if (fn.isSeq())
+    {
         cv::FileNodeIterator it = fn.begin(), itEnd = fn.end();
-        for (; it != itEnd; ++it) {
+        for (; it != itEnd; ++it)
+        {
             cv::FileNode item = *it;
-            
+
             if (item.isNone())
             {
                 sequence.append(boost::python::object());
@@ -559,11 +578,11 @@ boost::python::list readSequence(cv::FileNode fn, int depth)
             }
             else if (item.isSeq() && depth > 0)
             {
-                sequence.append(readSequence(item, depth-1)); // Depth-limited recursive call to read nested sequences
+                sequence.append(readSequence(item, depth - 1)); // Depth-limited recursive call to read nested sequences
             }
             else if (item.isMap() && depth > 0)
             {
-                sequence.append(readMap(item, depth-1));
+                sequence.append(readMap(item, depth - 1));
             }
         }
     }
