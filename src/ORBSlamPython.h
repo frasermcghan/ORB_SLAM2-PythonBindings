@@ -11,9 +11,9 @@ class ORBSlamPython
 {
 public:
     ORBSlamPython(std::string vocabFile, std::string settingsFile,
-                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD, bool useController = false);
+                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD);
     ORBSlamPython(const char *vocabFile, const char *settingsFile,
-                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD, bool useController = false);
+                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD);
     ~ORBSlamPython();
 
     bool initialize();
@@ -39,6 +39,7 @@ public:
     void setMode(ORB_SLAM2::System::eSensor mode);
     void setRGBMode(bool rgb);
     void setUseViewer(bool useViewer);
+    void setUseController(bool useController);
 
     static bool saveSettingsFile(boost::python::dict settings, std::string settingsFilename);
     static boost::python::dict loadSettingsFile(std::string settingsFilename);

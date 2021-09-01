@@ -39,8 +39,8 @@ BOOST_PYTHON_MODULE(orbslam2)
         .value("STEREO", ORB_SLAM2::System::eSensor::STEREO)
         .value("RGBD", ORB_SLAM2::System::eSensor::RGBD);
 
-    boost::python::class_<ORBSlamPython, boost::noncopyable>("System", boost::python::init<const char *, const char *, boost::python::optional<ORB_SLAM2::System::eSensor>, bool>())
-        .def(boost::python::init<std::string, std::string, boost::python::optional<ORB_SLAM2::System::eSensor>, bool>())
+    boost::python::class_<ORBSlamPython, boost::noncopyable>("System", boost::python::init<const char *, const char *, boost::python::optional<ORB_SLAM2::System::eSensor> >())
+        .def(boost::python::init<std::string, std::string, boost::python::optional<ORB_SLAM2::System::eSensor> >())
         .def("initialize", &ORBSlamPython::initialize)
         .def("load_and_process_mono", &ORBSlamPython::loadAndProcessMono)
         .def("process_image_mono", &ORBSlamPython::processMono)
@@ -54,6 +54,7 @@ BOOST_PYTHON_MODULE(orbslam2)
         .def("insert_keyframe", &ORBSlamPython::insertKeyframe)
         .def("set_mode", &ORBSlamPython::setMode)
         .def("set_use_viewer", &ORBSlamPython::setUseViewer)
+        .def("set_use_controller", &ORBSlamPython::setUseController)
         .def("get_keyframe_points", &ORBSlamPython::getKeyframePoints)
         .def("get_trajectory_points", &ORBSlamPython::getTrajectoryPoints)
         .def("get_tracked_mappoints", &ORBSlamPython::getTrackedMappoints)
@@ -69,24 +70,24 @@ BOOST_PYTHON_MODULE(orbslam2)
         .staticmethod("load_settings_file");
 }
 
-ORBSlamPython::ORBSlamPython(std::string vocabFile, std::string settingsFile, ORB_SLAM2::System::eSensor sensorMode, bool useController)
+ORBSlamPython::ORBSlamPython(std::string vocabFile, std::string settingsFile, ORB_SLAM2::System::eSensor sensorMode)
     : vocabluaryFile(vocabFile),
       settingsFile(settingsFile),
       sensorMode(sensorMode),
       system(nullptr),
-      bUseController(useController),
       bUseViewer(false),
+      bUseController(false),
       bUseRGB(true)
 {
 }
 
-ORBSlamPython::ORBSlamPython(const char *vocabFile, const char *settingsFile, ORB_SLAM2::System::eSensor sensorMode, bool useController)
+ORBSlamPython::ORBSlamPython(const char *vocabFile, const char *settingsFile, ORB_SLAM2::System::eSensor sensorMode)
     : vocabluaryFile(vocabFile),
       settingsFile(settingsFile),
       sensorMode(sensorMode),
-      bUseController(useController),
       system(nullptr),
       bUseViewer(false),
+      bUseController(false),
       bUseRGB(true)
 {
 }
@@ -443,6 +444,11 @@ void ORBSlamPython::setMode(ORB_SLAM2::System::eSensor mode)
 void ORBSlamPython::setUseViewer(bool useViewer)
 {
     bUseViewer = useViewer;
+}
+
+void ORBSlamPython::setUseController(bool useController)
+{
+    bUseController = useController;
 }
 
 void ORBSlamPython::setRGBMode(bool rgb)
