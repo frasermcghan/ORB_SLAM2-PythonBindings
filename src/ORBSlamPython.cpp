@@ -51,6 +51,7 @@ BOOST_PYTHON_MODULE(orbslam2)
         .def("shutdown", &ORBSlamPython::shutdown)
         .def("is_running", &ORBSlamPython::isRunning)
         .def("reset", &ORBSlamPython::reset)
+        .def("insert_keyframe", &ORBSlamPython::insertKeyframe)
         .def("set_mode", &ORBSlamPython::setMode)
         .def("set_use_viewer", &ORBSlamPython::setUseViewer)
         .def("get_keyframe_points", &ORBSlamPython::getKeyframePoints)
@@ -68,20 +69,22 @@ BOOST_PYTHON_MODULE(orbslam2)
         .staticmethod("load_settings_file");
 }
 
-ORBSlamPython::ORBSlamPython(std::string vocabFile, std::string settingsFile, ORB_SLAM2::System::eSensor sensorMode)
+ORBSlamPython::ORBSlamPython(std::string vocabFile, std::string settingsFile, ORB_SLAM2::System::eSensor sensorMode, bool useController)
     : vocabluaryFile(vocabFile),
       settingsFile(settingsFile),
       sensorMode(sensorMode),
+      bUseController(useController),
       system(nullptr),
       bUseViewer(false),
       bUseRGB(true)
 {
 }
 
-ORBSlamPython::ORBSlamPython(const char *vocabFile, const char *settingsFile, ORB_SLAM2::System::eSensor sensorMode)
+ORBSlamPython::ORBSlamPython(const char *vocabFile, const char *settingsFile, ORB_SLAM2::System::eSensor sensorMode, bool useController)
     : vocabluaryFile(vocabFile),
       settingsFile(settingsFile),
       sensorMode(sensorMode),
+      bUseController(useController),
       system(nullptr),
       bUseViewer(false),
       bUseRGB(true)
@@ -94,7 +97,7 @@ ORBSlamPython::~ORBSlamPython()
 
 bool ORBSlamPython::initialize()
 {
-    system = std::make_shared<ORB_SLAM2::System>(vocabluaryFile, settingsFile, sensorMode, bUseViewer);
+    system = std::make_shared<ORB_SLAM2::System>(vocabluaryFile, settingsFile, sensorMode, bUseViewer, bUseController);
     return true;
 }
 
@@ -108,6 +111,14 @@ void ORBSlamPython::reset()
     if (system)
     {
         system->Reset();
+    }
+}
+
+void ORBSlamPython::insertKeyframe()
+{
+    if (system)
+    {
+        system->ContollerNeedNewKeyFrame = true;
     }
 }
 

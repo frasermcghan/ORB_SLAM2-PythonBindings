@@ -11,9 +11,9 @@ class ORBSlamPython
 {
 public:
     ORBSlamPython(std::string vocabFile, std::string settingsFile,
-                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD);
+                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD, bool useController = False);
     ORBSlamPython(const char *vocabFile, const char *settingsFile,
-                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD);
+                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD, bool useController = False);
     ~ORBSlamPython();
 
     bool initialize();
@@ -25,6 +25,7 @@ public:
     bool loadAndProcessRGBD(std::string imageFile, std::string depthImageFile, double timestamp);
     bool processRGBD(cv::Mat image, cv::Mat depthImage, double timestamp);
     void reset();
+    void insertKeyframe();
     void shutdown();
     ORB_SLAM2::Tracking::eTrackingState getTrackingState() const;
     unsigned int getNumFeatures() const;
@@ -49,6 +50,7 @@ private:
     std::shared_ptr<ORB_SLAM2::System> system;
     bool bUseViewer;
     bool bUseRGB;
+    bool bUseController;
 };
 
 #endif // ORBSLAMPYTHON_H
