@@ -73,8 +73,8 @@ ORBSlamPython::ORBSlamPython(std::string vocabFile, std::string settingsFile, OR
     : vocabluaryFile(vocabFile),
       settingsFile(settingsFile),
       sensorMode(sensorMode),
-      bUseController(useController),
       system(nullptr),
+      bUseController(useController),
       bUseViewer(false),
       bUseRGB(true)
 {
