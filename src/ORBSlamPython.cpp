@@ -39,8 +39,8 @@ BOOST_PYTHON_MODULE(orbslam2)
         .value("STEREO", ORB_SLAM2::System::eSensor::STEREO)
         .value("RGBD", ORB_SLAM2::System::eSensor::RGBD);
 
-    boost::python::class_<ORBSlamPython, boost::noncopyable>("System", boost::python::init<const char *, const char *, boost::python::optional<ORB_SLAM2::System::eSensor> >())
-        .def(boost::python::init<std::string, std::string, boost::python::optional<ORB_SLAM2::System::eSensor> >())
+    boost::python::class_<ORBSlamPython, boost::noncopyable>("System", boost::python::init<const char *, const char *, boost::python::optional<ORB_SLAM2::System::eSensor>, bool>())
+        .def(boost::python::init<std::string, std::string, boost::python::optional<ORB_SLAM2::System::eSensor>, bool>())
         .def("initialize", &ORBSlamPython::initialize)
         .def("load_and_process_mono", &ORBSlamPython::loadAndProcessMono)
         .def("process_image_mono", &ORBSlamPython::processMono)
@@ -118,7 +118,7 @@ void ORBSlamPython::insertKeyframe()
 {
     if (system)
     {
-        system->ContollerNeedNewKeyFrame = true;
+        system->ControllerNeedNewKeyFrame = true;
     }
 }
 

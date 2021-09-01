@@ -11,9 +11,9 @@ class ORBSlamPython
 {
 public:
     ORBSlamPython(std::string vocabFile, std::string settingsFile,
-                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD, bool useController = False);
+                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD, bool useController = false);
     ORBSlamPython(const char *vocabFile, const char *settingsFile,
-                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD, bool useController = False);
+                  ORB_SLAM2::System::eSensor sensorMode = ORB_SLAM2::System::eSensor::RGBD, bool useController = false);
     ~ORBSlamPython();
 
     bool initialize();
