@@ -29,8 +29,15 @@ public:
     void shutdown();
     ORB_SLAM2::Tracking::eTrackingState getTrackingState() const;
     unsigned int getNumFeatures() const;
-    unsigned int getNumKeyframes() const;
     unsigned int getNumMatches() const;
+
+    // Needed to make keyframe decision
+    unsigned int getNumKeyframes() const;
+    unsigned int getNumFramesSinceReloc() const;
+    unsigned int getNumInliers() const;
+    unsigned int getNumTrackedMapPoints() const;
+    boost::python::list getKeyframeState() const;
+
     boost::python::list getKeyframePoints() const;
     boost::python::list getTrajectoryPoints() const;
     boost::python::list getTrackedMappoints() const;

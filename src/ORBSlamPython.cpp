@@ -60,7 +60,11 @@ BOOST_PYTHON_MODULE(orbslam2)
         .def("get_tracked_mappoints", &ORBSlamPython::getTrackedMappoints)
         .def("get_tracking_state", &ORBSlamPython::getTrackingState)
         .def("get_num_features", &ORBSlamPython::getNumFeatures)
+        .def("get_num_tracked_mappoints", &ORBSlamPython::getNumTrackedMapPoints)
+        .def("get_num_reloc_frames", &ORBSlamPython::getNumFramesSinceReloc)
+        .def("get_num_inliers", &ORBSlamPython::getNumInliers)
         .def("get_num_keyframes", &ORBSlamPython::getNumKeyframes)
+        .def("get_keyframe_state", &ORBSlamPython::getKeyframeState)
         .def("get_num_matched_features", &ORBSlamPython::getNumMatches)
         .def("save_settings", &ORBSlamPython::saveSettings)
         .def("load_settings", &ORBSlamPython::loadSettings)
@@ -246,6 +250,24 @@ unsigned int ORBSlamPython::getNumFeatures() const
     return 0;
 }
 
+unsigned int ORBSlamPython::getNumFramesSinceReloc() const
+{
+    if (system)
+    {
+        return system->GetTracker()->mCurrentFrame.mnId - system->GetTracker()->mnLastRelocFrameId;
+    }
+    return 0;
+}
+
+unsigned int ORBSlamPython::getNumInliers() const
+{
+    if (system)
+    {
+        return system->GetTracker()->mnMatchesInliers;
+    }
+    return 0;
+}
+
 unsigned int ORBSlamPython::getNumKeyframes() const
 {
     if (system)
@@ -283,6 +305,27 @@ unsigned int ORBSlamPython::getNumMatches() const
         return matches;
     }
     return 0;
+}
+
+unsigned int ORBSlamPython::getNumTrackedMapPoints() const
+{
+    if (system)
+    {
+        return boost::python::len(getTrackedMappoints);
+    }
+    return 0;
+}
+
+boost::python::list ORBSlamPython::getKeyframeState() const
+{
+    if (!system)
+    {
+        return boost::python::list();
+    }
+
+    boost::python::list state;
+    unsigned int n_keyframes = getNumKeyframes();
+    return state;
 }
 
 boost::python::list ORBSlamPython::getKeyframePoints() const
