@@ -36,7 +36,7 @@ public:
     unsigned int getNumFramesSinceReloc() const;
     unsigned int getNumInliers() const;
     unsigned int getNumTrackedMapPoints() const;
-    boost::python::list getKeyframeState() const;
+    boost::python::dict getKeyframeState() const;
 
     boost::python::list getKeyframePoints() const;
     boost::python::list getTrajectoryPoints() const;
