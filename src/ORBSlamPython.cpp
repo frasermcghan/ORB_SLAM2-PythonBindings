@@ -311,7 +311,7 @@ unsigned int ORBSlamPython::getNumTrackedMapPoints() const
 {
     if (system)
     {
-        return boost::python::len(getTrackedMappoints);
+        return boost::python::len(getTrackedMappoints());
     }
     return 0;
 }
