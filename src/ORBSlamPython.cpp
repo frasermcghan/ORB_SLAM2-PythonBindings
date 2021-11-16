@@ -326,14 +326,17 @@ boost::python::dict ORBSlamPython::getKeyframeState() const
     boost::python::dict state;
 
     unsigned int n_keyframes = getNumKeyframes();
-    unsigned int n_frames_since_reloc = getNumFramesSinceReloc();
+    unsigned int n_features = getNumFeatures();
     unsigned int n_tracked_mappoints = getNumTrackedMapPoints();
     unsigned int n_inliers = getNumInliers();
+    int tracking_state = system->GetTrackingState();
+    
 
     state["n_keyframes"] = n_keyframes;
-    state["n_frames_reloc"] = n_frames_since_reloc;
+    state["n_features"] = n_features;
     state["n_tracked_mappoints"] = n_tracked_mappoints;
     state["n_inliers_orb"] = n_inliers;
+    state["tracking_state"] = tracking_state;
 
     return state;
 }
