@@ -339,14 +339,11 @@ boost::python::dict ORBSlamPython::getKeyframeState() const
     unsigned int n_features = getNumFeatures();
     unsigned int n_tracked_mappoints = getNumTrackedMapPoints();
     unsigned int n_inliers = getNumInliers();
+    unsigned int tracking_ok = 0;
 
     if (system->GetTrackingState() == 2)
     {
-        unsigned int tracking_ok = 1;
-    }
-    else
-    {
-        unsigned int tracking_ok = 0;
+        tracking_ok = 1;
     }
 
     state["n_frames"] = n_frames;
