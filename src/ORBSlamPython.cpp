@@ -263,7 +263,7 @@ unsigned int ORBSlamPython::getNumFrames() const
 {
     if (system)
     {
-        return system->GetTracker()->mCurrentFrame.mnId;
+        return system->GetTracker()->mCurrentFrame.mnId + 1;
     }
     return 0;
 }
