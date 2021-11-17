@@ -33,6 +33,7 @@ public:
 
     // Needed to make keyframe decision
     unsigned int getNumKeyframes() const;
+    unsigned int getNumFrames() const;
     unsigned int getNumFramesSinceReloc() const;
     unsigned int getNumInliers() const;
     unsigned int getNumTrackedMapPoints() const;
