@@ -268,6 +268,22 @@ unsigned int ORBSlamPython::getNumFrames() const
     return 0;
 }
 
+boost::python::list ORBSlamPython::getCurrentKeypointDepths() const
+{
+    boost::python::list keypoint_depths;
+
+    if (system)
+    {
+        std::vector<float> depths = system->GetTracker()->mCurrentFrame.mvDepth;
+
+        for (float d : depths) 
+        {
+            keypoint_depths.append(d)
+        }
+    }
+    return keypoint_depths;
+}
+
 unsigned int ORBSlamPython::getNumInliers() const
 {
     if (system)
@@ -339,11 +355,12 @@ boost::python::dict ORBSlamPython::getKeyframeState() const
     unsigned int n_features = getNumFeatures();
     unsigned int n_tracked_mappoints = getNumTrackedMapPoints();
     unsigned int n_inliers = getNumInliers();
-    unsigned int tracking_ok = 0;
+    boost::python::list keypoint_depths = getCurrentKeypointDepths();
+    unsigned int tracking_lost = 0;
 
-    if (system->GetTrackingState() == 2)
+    if (system->GetTrackingState() == 3)
     {
-        tracking_ok = 1;
+        tracking_lost = 1;
     }
 
     state["n_frames"] = n_frames;
@@ -351,7 +368,8 @@ boost::python::dict ORBSlamPython::getKeyframeState() const
     state["n_features"] = n_features;
     state["n_tracked_mappoints"] = n_tracked_mappoints;
     state["n_inliers"]= n_inliers;
-    state["tracking_ok"] = tracking_ok;
+    state["keypoint_depths"]= keypoint_depths;
+    state["tracking_lost"] = tracking_lost;
 
     return state;
 }

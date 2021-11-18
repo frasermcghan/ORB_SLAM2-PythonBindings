@@ -35,6 +35,7 @@ public:
     unsigned int getNumKeyframes() const;
     unsigned int getNumFrames() const;
     unsigned int getNumFramesSinceReloc() const;
+    boost::python::list getCurrentKeypointDepths() const;
     unsigned int getNumInliers() const;
     unsigned int getNumTrackedMapPoints() const;
     boost::python::dict getKeyframeState() const;
