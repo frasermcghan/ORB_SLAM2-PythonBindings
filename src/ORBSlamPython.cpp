@@ -65,6 +65,7 @@ BOOST_PYTHON_MODULE(orbslam2)
         .def("get_num_inliers", &ORBSlamPython::getNumInliers)
         .def("get_num_keyframes", &ORBSlamPython::getNumKeyframes)
         .def("get_keyframe_state", &ORBSlamPython::getKeyframeState)
+        .def("get_keyframe_needed", &ORBSlamPython::getKeyframeNeeded)
         .def("get_num_matched_features", &ORBSlamPython::getNumMatches)
         .def("save_settings", &ORBSlamPython::saveSettings)
         .def("load_settings", &ORBSlamPython::loadSettings)
@@ -372,6 +373,16 @@ boost::python::dict ORBSlamPython::getKeyframeState() const
     state["tracking_lost"] = tracking_lost;
 
     return state;
+}
+
+bool ORBSlamPython::getKeyframeNeeded() const
+{
+    if (!system)
+    {
+        return false;
+    }
+
+    return system->GetKeyframeNeeded();
 }
 
 boost::python::list ORBSlamPython::getKeyframePoints() const

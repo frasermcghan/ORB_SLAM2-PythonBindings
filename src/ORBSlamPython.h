@@ -39,6 +39,7 @@ public:
     unsigned int getNumInliers() const;
     unsigned int getNumTrackedMapPoints() const;
     boost::python::dict getKeyframeState() const;
+    bool ORBSlamPython::getKeyframeNeeded() const;
 
     boost::python::list getKeyframePoints() const;
     boost::python::list getTrajectoryPoints() const;
