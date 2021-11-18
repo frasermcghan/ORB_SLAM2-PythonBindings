@@ -278,7 +278,7 @@ boost::python::list ORBSlamPython::getCurrentKeypointDepths() const
 
         for (float d : depths) 
         {
-            keypoint_depths.append(d)
+            keypoint_depths.append(d);
         }
     }
     return keypoint_depths;
