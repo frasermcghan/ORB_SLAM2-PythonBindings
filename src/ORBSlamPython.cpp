@@ -382,7 +382,7 @@ bool ORBSlamPython::getKeyframeNeeded() const
         return false;
     }
 
-    return system->GetKeyframeNeeded();
+    return system->getKeyframeNeeded();
 }
 
 boost::python::list ORBSlamPython::getKeyframePoints() const
