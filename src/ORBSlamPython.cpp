@@ -548,7 +548,7 @@ void ORBSlamPython::setUseViewer(bool useViewer)
 
 void ORBSlamPython::setUseController(bool useController)
 {
-    system->mbUseController = useController;
+    bUseController = useController;
 }
 
 void ORBSlamPython::setRGBMode(bool rgb)
